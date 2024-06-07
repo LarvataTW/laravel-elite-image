@@ -1,4 +1,4 @@
-FROM php:8.3.3-alpine3.19
+FROM php:8.3.8-fpm-alpine3.20
 
 ENV PHPIZE_DEPS \
         g++ \
