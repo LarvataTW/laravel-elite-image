@@ -37,9 +37,10 @@ RUN curl -s https://getcomposer.org/installer | php -- --quiet --install-dir=/us
 
 # 複製 PHP extensions 和 Composer 到下一層
 RUN mkdir -p /build/extensions /build/composer
-RUN cp -r /usr/local/lib/php/extensions /build/extensions/
+RUN cp -r /usr/local/lib/php/extensions /build/
 RUN cp -r /usr/bin/composer /build/composer/
 RUN cp -r ~/.composer /build/composer/.composer
+
 # RUN cp -P /usr/bin/envoy /build/composer/envoy
 
 # --- Final stage: 真正執行環境 ---
@@ -55,6 +56,8 @@ RUN apk add --no-cache \
 COPY --from=build /build/extensions /usr/local/lib/php/extensions
 COPY --from=build /build/composer/composer /usr/bin/composer
 COPY --from=build /build/composer/.composer /root/.composer
+COPY --from=build /usr/local/etc/php/conf.d/docker-php-ext-swoole.ini /usr/local/etc/php/conf.d/
+
 # COPY --from=build /build/composer/envoy /usr/bin/envoy
 # COPY --from=build /usr/bin/envoy /usr/bin/envoy2
 RUN  ln  -s  ~/.composer/vendor/bin/envoy /usr/bin/envoy
