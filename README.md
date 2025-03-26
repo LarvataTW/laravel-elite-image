@@ -10,8 +10,9 @@
 
 ### 標籤對應的Dockerfile
 > 以下提供版本詳細使用說明
-
-* [latest-php8.0](https://github.com/LarvataTW/laravel-elite-image/blob/master/8.0/Dockerfile) (主要維護版本)
+* [latest-php8.4](https://github.com/LarvataTW/laravel-elite-image/blob/master/8.4/Dockerfile) (下一代維護版本)
+* [latest-php8.3](https://github.com/LarvataTW/laravel-elite-image/blob/master/8.0/Dockerfile) (主要維護版本)
+* [latest-php8.0](https://github.com/LarvataTW/laravel-elite-image/blob/master/8.0/Dockerfile) (已停止支援)
 * [latest-php7.4](https://github.com/LarvataTW/laravel-elite-image/blob/master/7.4/Dockerfile) (僅提供PHP版本更新與安全問題修復)
 * [latest-php7.3](https://github.com/LarvataTW/laravel-elite-image/blob/master/7.3/Dockerfile) (已停止支援)
 * [latest-php7.2](https://github.com/LarvataTW/laravel-elite-image/blob/master/7.2/Dockerfile) (已停止支援)
