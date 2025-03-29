@@ -13,7 +13,7 @@
 
 跟8.3 的image 相比，8.4 的image 有下列改變
 
-* 使用 Multistage Build 減少運行中的image 尺寸 ( from 700mb -> 205mb )
+* 使用 Multi-stage Build 減少運行中的image 尺寸 ( from 700mb -> 205mb )
 * 移除 vim, bash 環境套件 
 * 加入gd (with, jpeg, png, webp )
 
