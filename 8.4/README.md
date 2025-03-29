@@ -9,6 +9,14 @@
 提供 Nginx、PHP-FPM、PHP Server、PHP swoole、Laravel 排程、Laravel 佇列處理等常見的進程管理，可搭配
 [laravel-octane](https://laravel.com/docs/8.x/octane) 使用高效能的 Swoole 網絡通信引擎。
 
+### Changlog
+
+跟8.3 的image 相比，8.4 的image 有下列改變
+
+* 使用 Multistage Build 減少運行中的image 尺寸 ( from 700mb -> 205mb )
+* 移除 vim, bash 環境套件 
+* 加入gd (with, jpeg, png, webp )
+
 ### 快速啟動
 
 這個 Image 適用於所有 php 環境，以 Laravel Framework 為例，通過以下三個步驟，你將建立好一個 Laravel 網站
@@ -40,10 +48,10 @@ bash -c "composer create-project --prefer-dist laravel/laravel=12 example-app"
 
 ```bash
 cd example-app
-wget https://github.com/LarvataTW/laravel-elite-image/raw/{version}/8.0/setup/Makefile
-wget https://github.com/LarvataTW/laravel-elite-image/raw/{version}/8.0/setup/Dockerfile
-wget https://github.com/LarvataTW/laravel-elite-image/raw/{version}/8.0/setup/Envoy.blade.php
-wget https://github.com/LarvataTW/laravel-elite-image/raw/{version}/8.0/setup/docker-compose.yml.example
+wget https://github.com/LarvataTW/laravel-elite-image/raw/{version}/8.4/setup/Makefile
+wget https://github.com/LarvataTW/laravel-elite-image/raw/{version}/8.4/setup/Dockerfile
+wget https://github.com/LarvataTW/laravel-elite-image/raw/{version}/8.4/setup/Envoy.blade.php
+wget https://github.com/LarvataTW/laravel-elite-image/raw/{version}/8.4/setup/docker-compose.yml.example
 ```
 
 3. 啟動環境(請先設定好.env)
