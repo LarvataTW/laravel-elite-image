@@ -60,7 +60,8 @@ RUN apk add --no-cache \
                 libpng \
                 libwebp \
                 libjpeg-turbo \
-                freetype 
+                freetype \
+                libzip 
 
 
 # 複製 build 階段安裝好的 PHP extensions 與 Composer 工具
@@ -76,7 +77,7 @@ COPY config/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY config/php.ini /usr/local/etc/php/php.ini
 COPY config/supervisord.conf /etc/supervisord.conf
 COPY ./supervisord.d /etc/supervisord.d
-# COPY ./optional/octane /opt/octane
+COPY ./optional/octane /opt/octane
 
 # 清理預設內容
 RUN rm -rf /var/cache/apk/* \
