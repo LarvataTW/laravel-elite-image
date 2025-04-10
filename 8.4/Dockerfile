@@ -32,6 +32,7 @@ RUN apk update && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
                 opcache \
                 pcntl \
                 gd \
+                exif \
         && docker-php-ext-enable \
                 swoole \
                 redis
@@ -61,7 +62,8 @@ RUN apk add --no-cache \
                 libwebp \
                 libjpeg-turbo \
                 freetype \
-                libzip 
+                libzip \
+                libexif
 
 
 # 複製 build 階段安裝好的 PHP extensions 與 Composer 工具
