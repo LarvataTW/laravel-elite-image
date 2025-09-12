@@ -1,0 +1,21 @@
+version: '3'
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  ### Web Server #######################################
+  web:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/var/www:cached
+    ports:
+      - "80:80"
+    environment:
+      - PHP_IDE_CONFIG=serverName=docker
+    networks:
+      - backend
+    command: "envoy run local"
