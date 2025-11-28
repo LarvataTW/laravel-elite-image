@@ -1,5 +1,5 @@
 # --- Build stage: 只用來編譯與安裝 PHP Extensions、Composer 工具 ---
-FROM php:8.4.5-fpm-alpine3.21 AS build
+FROM php:8.4.15-fpm-alpine3.21 AS build
 
 ENV PHPIZE_DEPS \
         g++ \
@@ -32,7 +32,6 @@ RUN apk update && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
                 opcache \
                 pcntl \
                 gd \
-                exif \
         && docker-php-ext-enable \
                 swoole \
                 redis
@@ -52,7 +51,7 @@ RUN cp -r /usr/bin/composer /build/composer/
 RUN cp -r ~/.composer /build/composer/.composer
 
 # --- Final stage: 真正執行環境 ---
-FROM php:8.4.5-fpm-alpine3.21
+FROM php:8.4.15-fpm-alpine3.21
 
 # 安裝基本工具（無需 build 工具）
 RUN apk add --no-cache \
