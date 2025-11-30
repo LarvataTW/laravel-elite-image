@@ -1,19 +1,9 @@
 # --- Build stage: 只用來編譯與安裝 PHP Extensions、Composer 工具 ---
 FROM php:8.4.15-fpm-alpine3.21 AS build
 
-ENV PHPIZE_DEPS \
-        g++ \
-        make \
-        autoconf \
-        # re2c \
-        zlib-dev \
-        # curl-dev \
-        libxml2-dev \
-        # oniguruma-dev\
-        libpng-dev \
-        freetype-dev \
-        jpeg-dev \
-        libwebp-dev
+# Build dependencies (legacy ENV style replaced with key=value)
+# Optional/disabled items: re2c, curl-dev, oniguruma-dev
+ENV PHPIZE_DEPS="g++ make autoconf zlib-dev libxml2-dev libpng-dev freetype-dev jpeg-dev libwebp-dev"
 
 WORKDIR /var/www
 # 安裝 build 工具與 PHP 擴充
