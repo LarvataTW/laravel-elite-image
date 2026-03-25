@@ -1,5 +1,8 @@
 # --- Build stage: 只用來編譯與安裝 PHP Extensions、Composer 工具 ---
-FROM php:8.4.15-fpm-alpine3.21 AS build
+FROM php:8.4.19-fpm-alpine3.22 AS build
+
+# DB_TYPE: mysql (預設) 或 pgsql
+ARG DB_TYPE=mysql
 
 # Build dependencies (legacy ENV style replaced with key=value)
 # Optional/disabled items: re2c, curl-dev, oniguruma-dev
@@ -9,14 +12,18 @@ WORKDIR /var/www
 # 安裝 build 工具與 PHP 擴充
 RUN apk update && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
         && apk add --no-cache libzip-dev zip  \
+        && if [ "$DB_TYPE" = "pgsql" ]; then apk add --no-cache postgresql-dev; fi \
         && pecl install \
                 swoole \
                 redis \
         && docker-php-ext-configure opcache --enable-opcache \
         && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
+        && if [ "$DB_TYPE" = "pgsql" ]; then \
+                docker-php-ext-install pdo_pgsql pgsql; \
+           else \
+                docker-php-ext-install pdo_mysql mysqli; \
+           fi \
         && docker-php-ext-install \
-                pdo_mysql \
-                mysqli \
                 zip \
                 exif \
                 opcache \
@@ -30,7 +37,7 @@ RUN apk update && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
 
 # 安裝 Composer 與 Envoy
 RUN curl -s https://getcomposer.org/installer | php -- --quiet --install-dir=/usr/bin --filename=composer \
-        && composer global require "laravel/envoy" \
+        && composer global require "laravel/envoy" "symfony/console:^7.0" "symfony/process:^7.0" \
         && chmod +x ~/.composer/vendor/bin/envoy && ln -s ~/.composer/vendor/bin/envoy /usr/bin/envoy
 
 
@@ -41,7 +48,10 @@ RUN cp -r /usr/bin/composer /build/composer/
 RUN cp -r ~/.composer /build/composer/.composer
 
 # --- Final stage: 真正執行環境 ---
-FROM php:8.4.15-fpm-alpine3.21
+FROM php:8.4.19-fpm-alpine3.22
+
+# 繼承 build arg
+ARG DB_TYPE=mysql
 
 # 安裝基本工具（無需 build 工具）
 RUN apk add --no-cache \
@@ -52,7 +62,8 @@ RUN apk add --no-cache \
                 libjpeg-turbo \
                 freetype \
                 libzip \
-                libexif
+                libexif \
+        && if [ "$DB_TYPE" = "pgsql" ]; then apk add --no-cache libpq; fi
 
 # 修補 CVE-2025-15467 (OpenSSL RCE)
 RUN apk upgrade --no-cache libcrypto3 libssl3 openssl
