@@ -3,7 +3,7 @@ FROM php:8.4.15-fpm-alpine3.21 AS build
 
 # Build dependencies (legacy ENV style replaced with key=value)
 # Optional/disabled items: re2c, curl-dev, oniguruma-dev
-ENV PHPIZE_DEPS="g++ make autoconf zlib-dev libxml2-dev libpng-dev freetype-dev jpeg-dev libwebp-dev"
+ENV PHPIZE_DEPS="g++ make autoconf zlib-dev libxml2-dev libpng-dev freetype-dev jpeg-dev libwebp-dev openssl-dev"
 
 WORKDIR /var/www
 # 安裝 build 工具與 PHP 擴充
@@ -53,6 +53,9 @@ RUN apk add --no-cache \
                 freetype \
                 libzip \
                 libexif
+
+# 修補 CVE-2025-15467 (OpenSSL RCE)
+RUN apk upgrade --no-cache libcrypto3 libssl3 openssl
 
 
 # 複製 build 階段安裝好的 PHP extensions 與 Composer 工具
