@@ -13,9 +13,38 @@ env:
 
 jobs:
 
-  docker:
+  prepare:
     runs-on: ubuntu-latest
-    # Publish `master` as Docker `latest` image.
+    outputs:
+      version: ${{ steps.get_version.outputs.version }}
+      matrix: ${{ steps.get_version.outputs.matrix }}
+    steps:
+      - name: Save tag to env
+        run: echo "TAG=${GITHUB_REF/refs\/tags\//}" >> ${GITHUB_ENV}
+      - name: Get version and build matrix
+        id: get_version
+        run: |
+          VERSION_LIST=(5.6 7.2 7.3 7.4 7.4-fpm 8.0 8.1 8.3 8.4)
+          for context in ${VERSION_LIST[@]}; do
+            if [ $(echo ${{ env.TAG }} | grep -c "php${context}") = "1" ]; then
+              echo "version=${context}" >> $GITHUB_OUTPUT
+              major=$(echo "${context}" | cut -d. -f1)
+              minor=$(echo "${context}" | cut -d. -f2)
+              if [ "${major}" -ge 9 ] 2>/dev/null || ([ "${major}" -eq 8 ] && [ "${minor}" -ge 4 ]) 2>/dev/null; then
+                echo 'matrix=[{"db":"mysql","suffix":""},{"db":"pgsql","suffix":"-pgsql"}]' >> $GITHUB_OUTPUT
+              else
+                echo 'matrix=[{"db":"mysql","suffix":""}]' >> $GITHUB_OUTPUT
+              fi
+              break
+            fi
+          done
+
+  docker:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.prepare.outputs.matrix) }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -29,8 +58,8 @@ jobs:
           # ghcr.io/${{ env.GITHUB_OWNER }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
           tags: |
-            type=semver,pattern={{version}}
-            type=match,prefix=latest-,pattern=php(.*)
+            type=semver,pattern={{version}},suffix=${{ matrix.suffix }}
+            type=match,prefix=latest-,pattern=php(.*),suffix=${{ matrix.suffix }}
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
       - name: Set up Docker Buildx
@@ -46,26 +75,15 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Save tag to env
-        run: |
-          echo "TAG=${GITHUB_REF/refs\/tags\//}" >> ${GITHUB_ENV}
-      - name: Get correct version
-        run: |
-          VERSION=( 5.6 7.2 7.3 7.4 7.4-fpm 8.0 8.1 8.3 8.4)
-          for context in ${VERSION[@]}; do
-            if [ $(echo ${{env.TAG}} |grep -c "php${context}") = "1" ]
-            then
-              echo "CURRENT_VERSION=${context}" >> ${GITHUB_ENV}
-              break
-            fi
-          done
       - name: Build and push
         id: docker_build
         uses: docker/build-push-action@v2
         with:
           push: true
           platforms: linux/amd64,linux/arm64/v8
-          context: ${{ env.CURRENT_VERSION }}/
+          context: ${{ needs.prepare.outputs.version }}/
+          build-args: |
+            DB_TYPE=${{ matrix.db }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
