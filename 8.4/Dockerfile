@@ -80,6 +80,15 @@ RUN  ln  -s  ~/.composer/vendor/bin/envoy /usr/bin/envoy
 COPY config/nginx.conf /etc/nginx/nginx.conf
 COPY config/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY config/php.ini /usr/local/etc/php/php.ini
+# pgsql 變體：切換 php.ini 中的 DB 擴充宣告，避免載入未編譯的 mysql 擴充
+RUN if [ "$DB_TYPE" = "pgsql" ]; then \
+        sed -i \
+            -e 's/^extension=pdo_mysql$/;extension=pdo_mysql/' \
+            -e 's/^extension=mysqli$/;extension=mysqli/' \
+            -e 's/^;extension=pdo_pgsql$/extension=pdo_pgsql/' \
+            -e 's/^;extension=pgsql$/extension=pgsql/' \
+            /usr/local/etc/php/php.ini; \
+    fi
 COPY config/supervisord.conf /etc/supervisord.conf
 COPY ./supervisord.d /etc/supervisord.d
 COPY ./optional/octane /opt/octane
