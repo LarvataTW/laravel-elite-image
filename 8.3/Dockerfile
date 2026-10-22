@@ -1,4 +1,4 @@
-FROM php:8.3.8-fpm-alpine3.20
+FROM php:8.3.36-fpm-alpine3.24
 
 ENV PHPIZE_DEPS \
         g++ \
@@ -23,7 +23,7 @@ RUN apk add --no-cache \
         libzip-dev \
         zip \
     && pecl install \
-        swoole \
+        swoole-6.2.2 \
         redis \
         mcrypt-1.0.7
 RUN docker-php-ext-configure opcache --enable-opcache
