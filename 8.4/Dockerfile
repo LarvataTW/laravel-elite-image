@@ -6,7 +6,7 @@ ARG DB_TYPE=mysql
 
 # Build dependencies (legacy ENV style replaced with key=value)
 # Optional/disabled items: re2c, curl-dev, oniguruma-dev
-ENV PHPIZE_DEPS="g++ make autoconf zlib-dev libxml2-dev libpng-dev freetype-dev jpeg-dev libwebp-dev openssl-dev"
+ENV PHPIZE_DEPS="g++ linux-headers make autoconf zlib-dev libxml2-dev libpng-dev freetype-dev jpeg-dev libwebp-dev openssl-dev"
 
 WORKDIR /var/www
 # 安裝 build 工具與 PHP 擴充
@@ -14,7 +14,7 @@ RUN apk update && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
         && apk add --no-cache libzip-dev zip  \
         && if [ "$DB_TYPE" = "pgsql" ]; then apk add --no-cache postgresql-dev; fi \
         && pecl install \
-                swoole-6.2.2 \
+                swoole \
                 redis \
         && docker-php-ext-configure opcache --enable-opcache \
         && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
