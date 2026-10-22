@@ -1,12 +1,12 @@
 # --- Build stage: 只用來編譯與安裝 PHP Extensions、Composer 工具 ---
-FROM php:8.5.10-fpm-alpine3.24 AS build
+FROM php:8.5.12-fpm-alpine3.24 AS build
 
 # DB_TYPE: mysql (預設) 或 pgsql
 ARG DB_TYPE=mysql
 
 # Build dependencies (legacy ENV style replaced with key=value)
 # Optional/disabled items: re2c, curl-dev, oniguruma-dev
-ENV PHPIZE_DEPS="g++ make autoconf zlib-dev libxml2-dev libpng-dev freetype-dev jpeg-dev libwebp-dev openssl-dev"
+ENV PHPIZE_DEPS="g++ linux-headers make autoconf zlib-dev libxml2-dev libpng-dev freetype-dev jpeg-dev libwebp-dev openssl-dev"
 
 WORKDIR /var/www
 # 安裝 build 工具與 PHP 擴充
@@ -48,7 +48,7 @@ RUN cp -r /usr/bin/composer /build/composer/
 RUN cp -r ~/.composer /build/composer/.composer
 
 # --- Final stage: 真正執行環境 ---
-FROM php:8.5.10-fpm-alpine3.24
+FROM php:8.5.12-fpm-alpine3.24
 
 # 繼承 build arg
 ARG DB_TYPE=mysql
