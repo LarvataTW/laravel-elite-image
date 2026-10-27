@@ -23,8 +23,8 @@ RUN apk update \
         libzip-dev \
         zip \
     && pecl install \
-        swoole \
-        redis \
+        swoole-5.0.3 \
+        redis-5.3.7 \
         mcrypt-1.0.6 \
     && docker-php-ext-configure opcache --enable-opcache \
     && docker-php-ext-install \
