@@ -14,15 +14,15 @@ RUN apk update && apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
         && apk add --no-cache libzip-dev zip  \
         && if [ "$DB_TYPE" = "pgsql" ]; then apk add --no-cache postgresql-dev; fi \
         && pecl install \
-                swoole \
+                swoole-6.2.3 \
                 redis \
         && docker-php-ext-configure opcache --enable-opcache \
-        && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
         && if [ "$DB_TYPE" = "pgsql" ]; then \
                 docker-php-ext-install pdo_pgsql pgsql; \
            else \
                 docker-php-ext-install pdo_mysql mysqli; \
            fi \
+        && docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
         && docker-php-ext-install \
                 zip \
                 exif \
