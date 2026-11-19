@@ -26,6 +26,12 @@ Image `CMD` 是 `envoy run production`。下游專案的 `Envoy.blade.php`（範
 - `config/php.ini` 預設寫死 mysql 的 `extension=` 行；pgsql 變體在 Dockerfile 用 `sed` 註解/反註解。**sed 依賴 php.ini 中這幾行的精確文字**（`^extension=pdo_mysql$`、`^;extension=pdo_pgsql$` 等），改 php.ini 時要保持一致，否則 pgsql 版會啟動時載入不存在的 mysql extension。
 - 8.5 起 opcache 已靜態編入 PHP，Dockerfile 不再 `docker-php-ext-install opcache`（8.4 仍有）。
 
+## Dockerfile 注意事項
+
+- `docker-php-ext-configure <ext>` 必須緊接在對應的 `docker-php-ext-install` 前，中間不可插其他 install：configure 會 touch `/usr/src/php/.docker-delete-me`，下一次 install 結束就刪掉 source，configure 參數跟著消失。3.8.0～3.8.3 的 8.4/8.5 gd 因此缺 JPEG／FreeType／WebP（#114188）。
+- swoole 一律釘版（`pecl install swoole-x.y.z`）：未釘版會抓到新版，可能要求更高 PHP 或改變行為。
+- 改 gd 相關設定後驗證：`docker run --rm <image> php -r 'var_dump(gd_info());'`，JPEG／FreeType／WebP 皆須為 true。
+
 ## 本地 build / 驗證
 
 ```bash
