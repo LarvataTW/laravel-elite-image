@@ -9,7 +9,11 @@ ENV PHPIZE_DEPS \
         libmcrypt-dev \
         curl-dev \
         libxml2-dev \
-        oniguruma-dev
+        oniguruma-dev \
+        libpng-dev \
+        freetype-dev \
+        libjpeg-turbo-dev \
+        libwebp-dev
 
 # 安裝必要套件 && 安裝常用工具 && 安裝 composer && php 任務執行器
 RUN apk update
@@ -21,6 +25,10 @@ RUN apk add --no-cache \
         supervisor \
         nginx \
         libmcrypt \
+        libpng \
+        libwebp \
+        libjpeg-turbo \
+        freetype \
         libzip-dev \
         zip \
     && pecl install \
@@ -28,13 +36,15 @@ RUN apk add --no-cache \
         redis \
         mcrypt-1.0.7
 RUN docker-php-ext-configure opcache --enable-opcache
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
 RUN docker-php-ext-install \
         pdo_mysql \
         mysqli \
         zip \
         exif \
         opcache \
-        pcntl
+        pcntl \
+        gd
 RUN docker-php-ext-enable \
         swoole \
         redis \
