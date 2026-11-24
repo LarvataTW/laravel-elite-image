@@ -35,6 +35,8 @@ RUN apk add --no-cache \
         swoole-5.1.8 \
         redis \
         mcrypt-1.0.7
+# 全部套件升到倉庫最新 revision，避免下游 apk add 撞到版本落差（#695）
+RUN apk upgrade --no-cache
 RUN docker-php-ext-configure opcache --enable-opcache
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp
 RUN docker-php-ext-install \

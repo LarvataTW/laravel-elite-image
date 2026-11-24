@@ -65,8 +65,8 @@ RUN apk add --no-cache \
                 libexif \
         && if [ "$DB_TYPE" = "pgsql" ]; then apk add --no-cache libpq; fi
 
-# 修補 CVE-2025-15467 (OpenSSL RCE)
-RUN apk upgrade --no-cache libcrypto3 libssl3 openssl
+# 全部套件升到倉庫最新 revision（含 OpenSSL CVE-2025-15467），避免下游 apk add 撞到版本落差（#695）
+RUN apk upgrade --no-cache
 
 
 # 複製 build 階段安裝好的 PHP extensions 與 Composer 工具
